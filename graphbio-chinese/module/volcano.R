@@ -43,6 +43,13 @@ volcanoUI <- function(id) {
           numericInput(ns("pval"), label = "显著性阈值(P值 或者 FDR)", value = 0.05),
           numericInput(ns("fc"), label = "log2倍数变化", value = 1),
           pickerInput(
+            inputId = ns("YScale"),
+            label = "Y轴坐标非线性化", 
+            choices = c('Linearized', 'log1p'),
+            multiple = FALSE,
+            selected = "Linearized"
+          ),
+          pickerInput(
                inputId = ns("color"),
                label = "选择颜色", 
                choices = paste0("color", 1:3),
@@ -212,6 +219,9 @@ volcanoServer <- function(id) {
                       annotate(geom = 'text', label = paste0('DOWN_Number: ', down_num), x = -Inf, y = Inf, hjust = -0.1, vjust = 1.5)+labs(color = "class")
 
           }
+          if (input$YScale != 'Linearized') {
+            p <- p + scale_y_continuous(trans=input$YScale)
+          }
           vals$p=p
           p
       })
@@ -254,6 +264,9 @@ volcanoServer <- function(id) {
                   segment.colour = "purple",segment.size = 0.5,segment.alpha = 0.5,max.overlaps = Inf)+geom_point(data = d[d$label!="",], color = "purple")+
                   annotate(geom = 'text', label = paste0('UP_Number: ', up_num), x = Inf, y = Inf, hjust = 1.1, vjust = 1.5)+
                   annotate(geom = 'text', label = paste0('DOWN_Number: ', down_num), x = -Inf, y = Inf, hjust = -0.1, vjust = 1.5)+labs(color = "class")
+          if (input$YScale != 'Linearized') {
+            p <- p + scale_y_continuous(trans=input$YScale)
+          }
           vals$p=p
           p
       })
